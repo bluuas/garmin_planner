@@ -8,15 +8,18 @@ Garmin users would know how much of a pain in the A it is to create and manage w
 ## Features
 
 - **Workout Creations**: Create various types of workouts (e.g., intervals, easy runs) with associated details like warmup and cooldown periods on garmin connect.
-- **Scheduling**: Schedulling workouts created on garmin connect.
+- **Scheduling**: Scheduling workouts created on garmin connect.
 
 ## Input YAML Structure
 
 Your YAML configuration should include the following sections:
 
 1. **User Credentials**:
-   - `email`: Your Garmin Connect email address.
-   - `password`: Your Garmin Connect password.
+   - create a `secrets.yaml` file in the `garmin_planner` folder and add your garmin connect credentials
+   - ```yaml 
+     email: "your@email.com"`
+     password: "mySecretPassword"
+     ```
 
 2. **Settings**:
    - `deleteSameNameWorkout`: A boolean indicating whether to delete existing workouts with the same name during creation of workout.
@@ -26,17 +29,19 @@ Your YAML configuration should include the following sections:
 
 4. **Workouts**:
    - Define each workout details for workout creation.
+   - Step type keys include: `warmup`, `cooldown`, `interval`, `recovery` and `repeat`.
+   - Start / End condition keys include: Lap Button `lap`, Time as `sec` or `min` and Distance in `m`
+   - Possible target types include: Heart Rate `@H` and Pace `@P`.
 
 5. **Schedule Plan**:
-   - Specify the start date and the sequence of workouts for workout schedulling. 
-   - (This will get all the workouts created on garmin connect, schedule them based on the workout name, if the workout is not found on garmin connect it will skip the day) 
+   - Specify the start date and the sequence of workouts for workout scheduling. 
+   - (This will get all the workouts created on garmin connect, schedule them based on the workout name, if the workout is not found on garmin connect it will skip the day)
+   - schedule multiple workouts on a single day by separating them with a comma (`,`).
+   - For a rest day, write `rest` in the schedule plan. 
 
 ### Sample YAML Structure
 
 ```yaml
-email: "example@gmail.com"
-password: "password"
-
 settings:
   deleteSameNameWorkout: true
 
@@ -52,12 +57,16 @@ workouts:
       - run: 30sec @P($VO2MaxP) # can use definition here or raw value 3:30-4:00
       - recovery: 1200m
     - cooldown: 15min @H(z2)
+  ga_30min:
+    - warmup: lap
+    - run: 30min @H(z2)
+    - cooldown: lap
 
 schedulePlan:
   start_from: 2024-10-08
   workouts: 
-    - interval_Vo2Max   # will be schedule on 2024-10-08
-    - ga_5k             # will be schedule on 2024-10-09
+    - interval_Vo2Max   # will be scheduled on 2024-10-08
+    - ga_5k, ga_30min   # will both be scheduled on 2024-10-09
     - rest              # if no "rest" workout found on garmin connect, skip this day
 ```
 
